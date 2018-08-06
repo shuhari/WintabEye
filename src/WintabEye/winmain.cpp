@@ -2,18 +2,29 @@
 #include "MainWindow.h"
 
 
+CAppModule _Module;
+
+
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR szCmdLine, int nCmdShow) {
 	
+	HRESULT hr = ::CoInitialize(NULL);
+	ATLASSERT(SUCCEEDED(hr));
+	AtlInitCommonControls(ICC_BAR_CLASSES);
+	hr = _Module.Init(NULL, hInstance);
+	ATLASSERT(SUCCEEDED(hr));
+	CMessageLoop msgLoop;
+	_Module.AddMessageLoop(&msgLoop);
+
 	MainWindow mainWin;
-	if (!mainWin.Create())
+	if (!mainWin.CreateEx())
 		return -1;
 	mainWin.ShowWindow(nCmdShow);
 	mainWin.UpdateWindow();
 
-	MSG msg;
-	while (GetMessage(&msg, NULL, 0, 0)) {
-		TranslateMessage(&msg);
-		DispatchMessage(&msg);
-	}
-	return (int) msg.wParam;
+	int nRet = msgLoop.Run();
+	_Module.RemoveMessageLoop();
+
+	_Module.Term();
+	CoUninitialize();
+	return nRet;
 }

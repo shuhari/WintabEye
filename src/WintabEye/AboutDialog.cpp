@@ -10,20 +10,18 @@ AboutDialog::~AboutDialog() {
 }
 
 
-LRESULT AboutDialog::onInitDialog(UINT, WPARAM, LPARAM, BOOL&) {
+BOOL AboutDialog::onInitDialog(CWindow wnd, LPARAM lParam) {
 	CenterWindow();
 	return TRUE;
 }
 
 
-LRESULT AboutDialog::onClose(UINT, WPARAM, LPARAM, BOOL&) {
+void AboutDialog::onClose() {
 	EndDialog(IDCANCEL);
-	return 0;
 }
 
 
-LRESULT AboutDialog::onCancel(WORD wNotify, WORD wId, HWND hCtrl, BOOL& handled) {
-	EndDialog(wId);
-	return 0;
+void AboutDialog::onCancel(UINT wNotify, int nId, CWindow wnd) {
+	EndDialog(nId);
 }
 

@@ -2,6 +2,7 @@
 #include "resource.h"
 #include "MainWindow.h"
 #include "AboutDialog.h"
+#include "AdminMode.h"
 
 
 MainWindow::MainWindow() {
@@ -12,32 +13,59 @@ MainWindow::~MainWindow() {
 }
 
 
-BOOL MainWindow::Create() {
-	if (CWindowImpl::Create(NULL, rcDefault, _T("WintabEye")) == NULL)
-		return FALSE;
-
-	HMODULE hInstance = _AtlBaseModule.GetResourceInstance();
-	HMENU hMenu = LoadMenu(hInstance, MAKEINTRESOURCE(IDR_MAINMENU));
-	SetMenu(hMenu);
-	SetIcon(LoadIcon(hInstance, MAKEINTRESOURCE(IDI_APP)));
-	return TRUE;
+BOOL MainWindow::PreTranslateMessage(MSG* pMsg) {
+	return FALSE;
 }
 
-LRESULT MainWindow::onDestroy(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& handled) {
+
+BOOL MainWindow::OnIdle() {
+	return FALSE;
+}
+
+
+int MainWindow::onCreate(LPCREATESTRUCT pCreateStruct) {
+	m_hWndClient = _view.Create(m_hWnd, rcDefault, NULL,
+		WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN, WS_EX_CLIENTEDGE);
+
+	CMessageLoop* pLoop = _Module.GetMessageLoop();
+	pLoop->AddMessageFilter(this);
+	pLoop->AddIdleHandler(this);
+
+	if (IsRunAsAdmin()) {
+		UIEnable(IDM_FILE_RUNASADMIN, FALSE);
+		SetWindowText(L"WintabEye (Administrator)");
+	} else {
+		UIEnable(IDM_FILE_RUNASADMIN, TRUE);
+		SetWindowText(L"WintabEye");
+	}
+
+	SetMsgHandled(FALSE);
+	return 0;
+}
+
+
+void MainWindow::onDestroy() {
 	PostQuitMessage(0);
-	return 0;
+	SetMsgHandled(FALSE);
 }
 
 
-LRESULT MainWindow::onFileExit(WORD wNotify, WORD wId, HWND hCtrl, BOOL& handled) {
+void MainWindow::onFileRunAsAdmin(UINT wNotify, int nId, CWindow wnd) {
+	if (!IsRunAsAdmin()) {
+		if (RestartAsAdmin()) {
+			PostMessage(WM_CLOSE);
+		}
+	}
+}
+
+
+void MainWindow::onFileExit(UINT wNotify, int nId, CWindow wnd) {
 	PostMessage(WM_CLOSE);
-	return 0;
 }
 
 
-LRESULT MainWindow::onHelpAbout(WORD wNotify, WORD wId, HWND hCtrl, BOOL& handled) {
+void MainWindow::onHelpAbout(UINT wNotify, int nId, CWindow wnd) {
 	AboutDialog dlg;
 	dlg.DoModal(m_hWnd);
-	return 0;
 }
 
