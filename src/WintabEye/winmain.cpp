@@ -9,7 +9,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR szCmdLin
 	
 	HRESULT hr = ::CoInitialize(NULL);
 	ATLASSERT(SUCCEEDED(hr));
-	AtlInitCommonControls(ICC_BAR_CLASSES);
+	AtlInitCommonControls(ICC_COOL_CLASSES | ICC_BAR_CLASSES);
 	hr = _Module.Init(NULL, hInstance);
 	ATLASSERT(SUCCEEDED(hr));
 	CMessageLoop msgLoop;
