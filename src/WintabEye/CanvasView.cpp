@@ -12,6 +12,11 @@ CanvasView::~CanvasView()
 }
 
 
+BOOL CanvasView::PreTranslateMessage(MSG* pMsg) {
+	return FALSE;
+}
+
+
 void CanvasView::onPaint(CDCHandle) {
 	PAINTSTRUCT ps;
 	CDCHandle dcPaint = BeginPaint(&ps);

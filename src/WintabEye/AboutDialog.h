@@ -3,7 +3,6 @@
 
 #include "resource.h"
 
-
 class AboutDialog : public CDialogImpl<AboutDialog>
 {
 public:

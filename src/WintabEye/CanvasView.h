@@ -13,6 +13,8 @@ public:
 	CanvasView();
 	~CanvasView();
 
+	BOOL PreTranslateMessage(MSG* pMsg);
+
 private:
 	void onPaint(CDCHandle dc);
 };
